@@ -38,7 +38,7 @@ export default function VerificationPage() {
       <h2 className="font-bold mb-4">{title}</h2>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b text-left text-gray-500">
+          <tr className="border-b text-left text-sage-500">
             <th className="pb-3 pr-4">Company</th>
             <th className="pb-3 pr-4">Email</th>
             <th className="pb-3 pr-4">Status</th>
@@ -74,7 +74,8 @@ export default function VerificationPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">User Verification</h1>
+      <p className="section-label">Administration</p>
+      <h1 className="page-heading mb-8">User Verification</h1>
       <UserTable title="Transporters" users={transporters} />
       <UserTable title="Businesses" users={businesses} />
     </div>

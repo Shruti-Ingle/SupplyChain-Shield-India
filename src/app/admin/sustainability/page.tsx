@@ -23,9 +23,10 @@ export default function AdminSustainabilityPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">National Sustainability Analytics</h1>
+      <p className="section-label">National impact</p>
+      <h1 className="page-heading mb-8">National Sustainability Analytics</h1>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Empty Trips Prevented", value: stats.empty_trips_avoided || 892 },
           { label: "Fuel Saved (L)", value: Math.round(stats.fuel_saved || 45600) },
@@ -54,7 +55,7 @@ export default function AdminSustainabilityPage() {
         <div className="card">
           <h2 className="font-bold mb-4">Top 5 Transporters by Fuel Saved</h2>
           {(stats.topTransporters || []).length === 0 ? (
-            <p className="text-gray-500 text-sm">Complete trips to populate rankings.</p>
+            <p className="text-sage-500 text-sm">Complete trips to populate rankings.</p>
           ) : (
             <ol className="space-y-2">
               {stats.topTransporters.map((t, i) => (
@@ -69,7 +70,7 @@ export default function AdminSustainabilityPage() {
         <div className="card">
           <h2 className="font-bold mb-4">Top 5 Businesses by CO₂ Reduced</h2>
           {(stats.topBusinesses || []).length === 0 ? (
-            <p className="text-gray-500 text-sm">Complete trips to populate rankings.</p>
+            <p className="text-sage-500 text-sm">Complete trips to populate rankings.</p>
           ) : (
             <ol className="space-y-2">
               {stats.topBusinesses.map((b, i) => (

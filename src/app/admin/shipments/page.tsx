@@ -29,7 +29,8 @@ export default function AdminShipmentsPage() {
   return (
     <div>
       {ToastComponent}
-      <h1 className="text-2xl font-bold mb-6">Shipment Monitoring</h1>
+      <p className="section-label">Monitoring</p>
+      <h1 className="page-heading mb-8">Shipment Monitoring</h1>
       <input
         className="input-field max-w-md mb-4"
         placeholder="Search by route or company..."
@@ -39,7 +40,7 @@ export default function AdminShipmentsPage() {
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b text-left text-gray-500">
+            <tr className="border-b text-left text-sage-500">
               <th className="pb-3 pr-4">Route</th>
               <th className="pb-3 pr-4">Transporter</th>
               <th className="pb-3 pr-4">Business</th>
@@ -57,14 +58,14 @@ export default function AdminShipmentsPage() {
                   <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">{t.status}</span>
                 </td>
                 <td className="py-3 flex gap-2">
-                  <Link href={`/tracking/${t.id}`} className="text-saffron-600 text-xs font-medium">View Tracking</Link>
-                  <button onClick={() => showToast("Demo mode – reassignment not available")} className="text-gray-500 text-xs">Reassign</button>
+                  <Link href={`/tracking/${t.id}`} className="text-moss text-xs font-medium">View Tracking</Link>
+                  <button onClick={() => showToast("Demo mode – reassignment not available")} className="text-sage-500 text-xs">Reassign</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && <p className="text-center text-gray-500 py-8">No active shipments.</p>}
+        {filtered.length === 0 && <p className="text-center text-sage-500 py-8">No active shipments.</p>}
       </div>
     </div>
   );

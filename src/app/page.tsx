@@ -1,7 +1,10 @@
 "use client";
 
 import PublicNavbar from "@/components/PublicNavbar";
+import PublicFooter from "@/components/PublicFooter";
 import LiveCounter from "@/components/LiveCounter";
+import ParticleField from "@/components/ParticleField";
+import FadeIn from "@/components/FadeIn";
 import Link from "next/link";
 import {
   Brain,
@@ -13,6 +16,9 @@ import {
   Package,
   Sparkles,
   CheckCircle,
+  ArrowRight,
+  Wind,
+  TreePine,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -32,11 +38,36 @@ export default function LandingPage() {
   }, []);
 
   const features = [
-    { icon: Brain, title: "AI Route Matching", desc: "Smart algorithms match empty return trucks with cargo on the same route." },
-    { icon: MapPin, title: "Live Tracking", desc: "Real-time map tracking with ETA and delivery status updates." },
-    { icon: Leaf, title: "Sustainability Dashboard", desc: "Track fuel saved, CO₂ reduced, and your green score." },
-    { icon: FileText, title: "Carbon Reports", desc: "Download sustainability reports for your business." },
-    { icon: Bell, title: "Smart Notifications", desc: "Get alerts when new matches appear for your routes." },
+    {
+      icon: Brain,
+      title: "AI Route Matching",
+      desc: "Smart algorithms match empty return trucks with cargo on the same route.",
+      tall: false,
+    },
+    {
+      icon: MapPin,
+      title: "Live Tracking",
+      desc: "Real-time map tracking with ETA and delivery status updates.",
+      tall: true,
+    },
+    {
+      icon: Leaf,
+      title: "Sustainability Dashboard",
+      desc: "Track fuel saved, CO₂ reduced, and your green score.",
+      tall: false,
+    },
+    {
+      icon: FileText,
+      title: "Carbon Reports",
+      desc: "Download sustainability reports for your business.",
+      tall: true,
+    },
+    {
+      icon: Bell,
+      title: "Smart Notifications",
+      desc: "Get alerts when new matches appear for your routes.",
+      tall: false,
+    },
   ];
 
   const steps = [
@@ -47,153 +78,230 @@ export default function LandingPage() {
     { icon: Leaf, title: "Fuel & CO₂ saved", desc: "Every backhaul trip reduces waste and emissions." },
   ];
 
+  const benefits = [
+    { num: "01", title: "Lower emissions", icon: Wind },
+    { num: "02", title: "Environmental stewardship", icon: TreePine },
+    { num: "03", title: "Increased profitability", icon: Leaf },
+  ];
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-cream">
       <PublicNavbar />
 
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-saffron-500 via-saffron-400 to-india-green text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)"
-          }} />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-32 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            Reduce Empty Truck Movement.<br />
-            Reduce Emissions. Increase Profits.
-          </h1>
-          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8">
-            India&apos;s AI-powered logistics platform matching empty return trucks with cargo shipments — saving fuel, cutting costs, and protecting our planet.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register?role=transporter" className="bg-white text-saffron-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition shadow-lg">
-              Register as Transporter
-            </Link>
-            <Link href="/register?role=business" className="border-2 border-white text-white font-bold py-3 px-8 rounded-lg hover:bg-white/10 transition">
-              Register as Business
-            </Link>
-          </div>
+      <section className="relative hero-gradient text-white overflow-hidden min-h-[85vh] flex items-center">
+        <ParticleField count={50} variant="hero" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,168,136,0.25),transparent_60%)]" />
+        <div className="relative max-w-6xl mx-auto px-4 py-24 md:py-32 w-full">
+          <FadeIn>
+            <p className="section-label text-sage-300 mb-4">Greener logistics for India</p>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.1] tracking-tight max-w-3xl">
+              Embrace smarter routes.<br />
+              <span className="text-sage-300">Embrace your impact.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-sage-200/90 max-w-xl mb-10 leading-relaxed">
+              AI-powered matching for empty return trucks — cutting fuel waste, reducing CO₂, and making freight more profitable.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/register?role=transporter" className="group inline-flex items-center justify-center gap-2 bg-white text-moss font-semibold py-3.5 px-8 rounded-full hover:bg-sage-50 transition-all duration-300 shadow-lg hover:shadow-glow hover:-translate-y-0.5">
+                Register as Transporter
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/register?role=business" className="inline-flex items-center justify-center border-2 border-white/40 text-white font-semibold py-3.5 px-8 rounded-full hover:bg-white/10 hover:border-white/60 transition-all duration-300">
+                Register as Business
+              </Link>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* Problem */}
-      <section className="py-16 bg-white">
+      <section className="py-20 md:py-28">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-8 text-gray-900">The Problem</h2>
-          <div className="flex flex-wrap justify-center gap-1 mb-8 max-w-lg mx-auto">
-            {Array.from({ length: 100 }).map((_, i) => (
-              <div
-                key={i}
-                className={`w-3 h-3 rounded-sm ${i < 30 ? "bg-red-500" : "bg-gray-200"}`}
-              />
-            ))}
-          </div>
-          <p className="text-xl text-gray-600">
-            Nearly <span className="font-bold text-red-600">one-third</span> of truck journeys in India return empty — wasting fuel, increasing costs, and emitting unnecessary CO₂.
-          </p>
+          <FadeIn>
+            <p className="section-label">The challenge</p>
+            <h2 className="section-title mb-10">One-third of trucks return empty</h2>
+          </FadeIn>
+          <FadeIn delay={150}>
+            <div className="flex flex-wrap justify-center gap-1.5 mb-10 max-w-md mx-auto">
+              {Array.from({ length: 100 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 hover:scale-125 ${
+                    i < 30 ? "bg-earth" : "bg-sage-200"
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="text-lg text-sage-600 leading-relaxed max-w-2xl mx-auto">
+              Nearly <span className="font-semibold text-moss">one-third</span> of truck journeys in India return empty — wasting fuel, increasing costs, and emitting unnecessary CO₂ into our atmosphere.
+            </p>
+          </FadeIn>
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-16 bg-gray-50">
+      <section id="how-it-works" className="py-20 md:py-28 bg-cream-dark">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+          <FadeIn>
+            <p className="section-label text-center">Our approach</p>
+            <h2 className="section-title text-center mb-14">How it works</h2>
+          </FadeIn>
           <div className="space-y-0">
             {steps.map((step, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-full bg-saffron-500 text-white flex items-center justify-center shrink-0">
-                    <step.icon size={22} />
+              <FadeIn key={i} delay={i * 100}>
+                <div className="flex gap-5 group">
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 rounded-2xl bg-moss text-white flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-glow">
+                      <step.icon size={22} />
+                    </div>
+                    {i < steps.length - 1 && (
+                      <div className="w-px flex-1 bg-sage-200 my-2 min-h-[2rem]" />
+                    )}
                   </div>
-                  {i < steps.length - 1 && <div className="w-0.5 flex-1 bg-saffron-200 my-2" />}
+                  <div className="pb-10 pt-1">
+                    <h3 className="font-bold text-lg text-sage-900 mb-1 group-hover:text-moss transition-colors">{step.title}</h3>
+                    <p className="text-sage-600 leading-relaxed">{step.desc}</p>
+                  </div>
                 </div>
-                <div className="pb-10">
-                  <h3 className="font-bold text-lg">{step.title}</h3>
-                  <p className="text-gray-600">{step.desc}</p>
-                </div>
-              </div>
+              </FadeIn>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Sustainability */}
-      <section id="sustainability" className="py-16 bg-india-green text-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Sustainability Impact</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {/* Sustainability Stats */}
+      <section id="sustainability" className="relative py-20 md:py-28 hero-gradient text-white overflow-hidden">
+        <ParticleField count={25} variant="subtle" />
+        <div className="relative max-w-6xl mx-auto px-4">
+          <FadeIn>
+            <p className="section-label text-sage-300 text-center">Our impact</p>
+            <h2 className="section-title text-center text-white mb-14">Sustainability at scale</h2>
+          </FadeIn>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {[
-              { label: "Trips Matched", value: stats.trips_matched },
-              { label: "Empty Trips Avoided", value: stats.empty_trips_avoided },
-              { label: "Fuel Saved (L)", value: stats.fuel_saved },
-              { label: "CO₂ Reduced (kg)", value: stats.co2_reduced },
-            ].map((s) => (
-              <div key={s.label} className="text-center bg-white/10 rounded-xl p-6 backdrop-blur">
-                <p className="text-3xl md:text-4xl font-bold">
-                  <LiveCounter target={s.value} />
-                </p>
-                <p className="text-sm text-white/80 mt-2">{s.label}</p>
-              </div>
+              { label: "Trips Matched", value: stats.trips_matched, suffix: "+" },
+              { label: "Empty Trips Avoided", value: stats.empty_trips_avoided, suffix: "+" },
+              { label: "Fuel Saved (L)", value: stats.fuel_saved, suffix: "" },
+              { label: "CO₂ Reduced (kg)", value: stats.co2_reduced, suffix: "" },
+            ].map((s, i) => (
+              <FadeIn key={s.label} delay={i * 80}>
+                <div className="text-center bg-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-sm border border-white/10 hover:bg-white/15 hover:border-white/20 transition-all duration-300 hover:-translate-y-1">
+                  <p className="text-3xl md:text-4xl font-bold tracking-tight">
+                    <LiveCounter target={s.value} suffix={s.suffix} />
+                  </p>
+                  <p className="text-sm text-sage-200/80 mt-2">{s.label}</p>
+                </div>
+              </FadeIn>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Platform Features</h2>
-          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {features.map((f) => (
-              <div key={f.title} className="card text-center hover:shadow-lg transition">
-                <f.icon className="mx-auto text-saffron-500 mb-4" size={36} />
-                <h3 className="font-bold mb-2">{f.title}</h3>
-                <p className="text-sm text-gray-600">{f.desc}</p>
+      {/* Benefits */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <FadeIn direction="left">
+              <p className="section-label">Our benefits</p>
+              <h2 className="section-title mb-6">
+                Why choose <span className="gradient-text">SupplyChain Shield</span>
+              </h2>
+              <p className="text-sage-600 leading-relaxed mb-8">
+                Our commitment to sustainability and cutting-edge technology ensures logistics that&apos;s reliable, profitable, and planet-friendly.
+              </p>
+              <div className="space-y-4">
+                {benefits.map((b) => (
+                  <div
+                    key={b.num}
+                    className="flex items-center gap-4 p-4 rounded-2xl border border-sage-100 bg-white hover:border-sage-200 hover:shadow-soft transition-all duration-300 group cursor-default"
+                  >
+                    <span className="text-xs font-bold text-sage-400 w-8">{b.num}</span>
+                    <b.icon size={22} className="text-sage-500 group-hover:text-moss transition-colors" />
+                    <span className="font-semibold text-sage-800 group-hover:text-moss transition-colors">{b.title}</span>
+                  </div>
+                ))}
               </div>
+            </FadeIn>
+            <FadeIn direction="right" delay={200}>
+              <div className="relative">
+                <div className="aspect-[4/5] rounded-3xl bg-gradient-to-br from-sage-200 via-sage-100 to-cream-dark overflow-hidden border border-sage-100 shadow-card">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Leaf size={120} className="text-sage-300/40 animate-float" strokeWidth={0.8} />
+                  </div>
+                  <ParticleField count={20} variant="subtle" />
+                </div>
+                <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl p-5 shadow-card border border-sage-100 animate-float-slow">
+                  <p className="text-2xl font-bold text-moss">70%</p>
+                  <p className="text-xs text-sage-500 mt-1">Potential fuel savings</p>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* Features - Pinterest grid */}
+      <section id="features" className="py-20 md:py-28 bg-cream-dark">
+        <div className="max-w-6xl mx-auto px-4">
+          <FadeIn>
+            <p className="section-label text-center">What we offer</p>
+            <h2 className="section-title text-center mb-14">Platform features</h2>
+          </FadeIn>
+          <div className="pinterest-grid">
+            {features.map((f, i) => (
+              <FadeIn key={f.title} delay={i * 80} className="pinterest-item">
+                <div
+                  className={`card-hover text-left ${f.tall ? "md:pb-10" : ""}`}
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-sage-100 flex items-center justify-center mb-4 group-hover:bg-sage-200 transition-colors">
+                    <f.icon className="text-moss" size={24} />
+                  </div>
+                  <h3 className="font-bold text-lg text-sage-900 mb-2">{f.title}</h3>
+                  <p className="text-sm text-sage-600 leading-relaxed">{f.desc}</p>
+                </div>
+              </FadeIn>
             ))}
           </div>
         </div>
       </section>
 
       {/* About */}
-      <section id="about" className="py-16 bg-gray-50">
+      <section id="about" className="py-20 md:py-28">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">About SupplyChain Shield India</h2>
-          <p className="text-gray-600 leading-relaxed">
-            Built for India&apos;s logistics ecosystem, SupplyChain Shield connects transporters and businesses through intelligent route matching. Our mission is to eliminate empty truck miles, reduce the carbon footprint of freight transport, and make logistics more profitable for everyone.
-          </p>
+          <FadeIn>
+            <p className="section-label">About us</p>
+            <h2 className="section-title mb-6">Built for India&apos;s green future</h2>
+            <p className="text-sage-600 leading-relaxed text-lg">
+              SupplyChain Shield connects transporters and businesses through intelligent route matching. Our mission is to eliminate empty truck miles, reduce the carbon footprint of freight transport, and make logistics more profitable for everyone.
+            </p>
+          </FadeIn>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
-          <div>
-            <p className="text-white font-bold text-lg mb-2">SupplyChain Shield India</p>
-            <p className="text-sm">Smart logistics for a greener India.</p>
-          </div>
-          <div>
-            <p className="text-white font-semibold mb-3">Legal</p>
-            <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-white">Contact Us</a></li>
-            </ul>
-          </div>
-          <div>
-            <p className="text-white font-semibold mb-3">Connect</p>
-            <div className="flex gap-4 text-sm">
-              <a href="#" className="hover:text-white">Twitter</a>
-              <a href="#" className="hover:text-white">LinkedIn</a>
-              <a href="#" className="hover:text-white">Facebook</a>
-            </div>
-          </div>
+      {/* CTA */}
+      <section className="relative py-20 md:py-28 hero-gradient text-white overflow-hidden">
+        <ParticleField count={30} variant="hero" />
+        <div className="relative max-w-3xl mx-auto px-4 text-center">
+          <FadeIn>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Join the sustainable logistics movement
+            </h2>
+            <p className="text-sage-200/90 mb-8 text-lg">
+              Discover solutions that reduce costs and environmental impact. Take the first step today.
+            </p>
+            <Link
+              href="/register"
+              className="group inline-flex items-center gap-2 bg-white text-moss font-semibold py-3.5 px-8 rounded-full hover:bg-sage-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5"
+            >
+              Get a free consultation
+              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+            </Link>
+          </FadeIn>
         </div>
-        <div className="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-sm">
-          © 2026 SupplyChain Shield India. All rights reserved.
-        </div>
-      </footer>
+      </section>
+
+      <PublicFooter />
     </div>
   );
 }

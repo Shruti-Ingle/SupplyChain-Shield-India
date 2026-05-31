@@ -11,18 +11,19 @@ export default function BusinessProfilePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Profile</h1>
-      <div className="card max-w-lg space-y-4">
+      <p className="section-label">Account</p>
+      <h1 className="page-heading mb-8">Profile</h1>
+      <div className="card-hover max-w-lg space-y-4">
         <div>
-          <label className="text-sm text-gray-500">Company Name</label>
+          <label className="text-sm text-sage-500">Company Name</label>
           <p className="font-medium">{user?.company_name}</p>
         </div>
         <div>
-          <label className="text-sm text-gray-500">Email</label>
+          <label className="text-sm text-sage-500">Email</label>
           <p className="font-medium">{user?.email}</p>
         </div>
         <div>
-          <label className="text-sm text-gray-500">Role</label>
+          <label className="text-sm text-sage-500">Role</label>
           <p className="font-medium capitalize">Business</p>
         </div>
       </div>

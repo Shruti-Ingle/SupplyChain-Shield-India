@@ -65,12 +65,12 @@ export default function CityAutocomplete({
         autoComplete="off"
       />
       {open && suggestions.length > 0 && (
-        <ul className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <ul className="absolute z-20 w-full mt-1 bg-white border border-sage-200 rounded-xl shadow-card max-h-48 overflow-y-auto">
           {suggestions.map((city) => (
             <li key={`${city.name}-${city.state}`}>
               <button
                 type="button"
-                className="w-full text-left px-4 py-2 hover:bg-saffron-50 text-sm"
+                className="w-full text-left px-4 py-2.5 hover:bg-sage-50 text-sm text-sage-800 transition-colors"
                 onClick={() => selectCity(city)}
               >
                 {formatCity(city)}

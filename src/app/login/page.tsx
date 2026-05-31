@@ -3,8 +3,10 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Shield } from "lucide-react";
+import { Leaf } from "lucide-react";
 import PublicNavbar from "@/components/PublicNavbar";
+import ParticleField from "@/components/ParticleField";
+import FadeIn from "@/components/FadeIn";
 
 function LoginForm() {
   const router = useRouter();
@@ -55,68 +57,86 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream relative">
+      <div className="fixed inset-0 pointer-events-none opacity-40">
+        <ParticleField count={30} variant="subtle" />
+      </div>
       <PublicNavbar />
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="card">
-          <div className="text-center mb-6">
-            <Shield className="mx-auto text-saffron-500 mb-2" size={40} />
-            <h1 className="text-2xl font-bold">Login</h1>
-          </div>
 
-          <div className="flex rounded-lg overflow-hidden border border-gray-200 mb-6">
-            {(["transporter", "business", "admin"] as const).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => { setRole(r); fillDemo(); }}
-                className={`flex-1 py-2 text-sm font-medium capitalize transition ${
-                  role === r ? "bg-saffron-500 text-white" : "bg-white text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                {r}
+      <div className="relative max-w-md mx-auto px-4 py-16 md:py-24">
+        <FadeIn>
+          <div className="card-hover shadow-card border-sage-100">
+            <div className="text-center mb-8">
+              <div className="w-14 h-14 rounded-2xl bg-moss flex items-center justify-center mx-auto mb-4 shadow-soft">
+                <Leaf className="text-sage-100" size={28} />
+              </div>
+              <h1 className="text-2xl font-bold text-sage-900 tracking-tight">Welcome back</h1>
+              <p className="text-sm text-sage-500 mt-1">Sign in to your account</p>
+            </div>
+
+            <div className="flex rounded-xl overflow-hidden border border-sage-200 mb-6 p-1 bg-sage-50/50">
+              {(["transporter", "business", "admin"] as const).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => { setRole(r); fillDemo(); }}
+                  className={`flex-1 py-2 text-sm font-medium capitalize rounded-lg transition-all duration-200 ${
+                    role === r
+                      ? "bg-white text-moss shadow-soft"
+                      : "text-sage-500 hover:text-sage-700"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-sage-700 mb-1.5">Email</label>
+                <input
+                  type="email"
+                  className="input-field"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-sage-700 mb-1.5">Password</label>
+                <input
+                  type="password"
+                  className="input-field"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              {error && (
+                <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-xl border border-red-100">
+                  {error}
+                </p>
+              )}
+              <button type="submit" disabled={loading} className="btn-primary w-full">
+                {loading ? "Logging in..." : "Login"}
               </button>
-            ))}
-          </div>
+            </form>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input
-                type="email"
-                className="input-field"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <input
-                type="password"
-                className="input-field"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-            <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? "Logging in..." : "Login"}
+            <button
+              onClick={fillDemo}
+              className="mt-4 text-sm text-sage-500 hover:text-moss transition-colors w-full text-center"
+            >
+              Fill demo credentials
             </button>
-          </form>
 
-          <button onClick={fillDemo} className="mt-3 text-sm text-saffron-600 hover:underline w-full text-center">
-            Fill demo credentials
-          </button>
-
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-saffron-600 font-medium hover:underline">
-              Register
-            </Link>
-          </p>
-        </div>
+            <p className="text-center text-sm text-sage-500 mt-6 pt-6 border-t border-sage-100">
+              Don&apos;t have an account?{" "}
+              <Link href="/register" className="text-moss font-semibold hover:underline">
+                Register
+              </Link>
+            </p>
+          </div>
+        </FadeIn>
       </div>
     </div>
   );

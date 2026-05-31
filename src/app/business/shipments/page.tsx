@@ -39,20 +39,21 @@ export default function ShipmentsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">My Shipments</h1>
-      <div className="flex gap-2 mb-6">
+      <p className="section-label">Logistics</p>
+      <h1 className="page-heading mb-8">My Shipments</h1>
+      <div className="flex gap-2 mb-6 flex-wrap">
         {(["active", "completed", "cancelled"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${tab === t ? "bg-india-green text-white" : "bg-white text-gray-600 border"}`}>
+            className={tab === t ? "tab-btn-active" : "tab-btn-inactive"}>
             {t}
           </button>
         ))}
       </div>
 
-      <div className="card overflow-x-auto">
+      <div className="card-hover overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b text-left text-gray-500">
+            <tr className="border-b text-left text-sage-500">
               <th className="pb-3 pr-4">ID</th>
               <th className="pb-3 pr-4">Route</th>
               <th className="pb-3 pr-4">Weight</th>
@@ -71,7 +72,7 @@ export default function ShipmentsPage() {
                 </td>
                 <td className="py-3 flex gap-2">
                   {["matched", "in_transit"].includes(s.status) && (
-                    <Link href="/business/transporters" className="text-saffron-600 text-xs font-medium">Track</Link>
+                    <Link href="/business/transporters" className="text-moss text-xs font-medium">Track</Link>
                   )}
                   {s.status === "open" && (
                     <button onClick={() => cancel(s.id)} className="text-red-600 text-xs font-medium">Cancel</button>
@@ -81,7 +82,7 @@ export default function ShipmentsPage() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && <p className="text-center text-gray-500 py-8">No shipments found.</p>}
+        {filtered.length === 0 && <p className="text-center text-sage-500 py-8">No shipments found.</p>}
       </div>
     </div>
   );

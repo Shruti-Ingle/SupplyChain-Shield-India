@@ -18,8 +18,9 @@ export default function BusinessSustainabilityPage() {
   return (
     <div>
       {ToastComponent}
-      <h1 className="text-2xl font-bold mb-6">Sustainability Dashboard</h1>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <p className="section-label">Environmental impact</p>
+      <h1 className="page-heading mb-8">Sustainability Dashboard</h1>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { icon: Leaf, label: "CO₂ Saved (kg)", value: stats.co2_saved },
           { icon: Fuel, label: "Fuel Saved (L)", value: stats.fuel_saved },
@@ -27,14 +28,14 @@ export default function BusinessSustainabilityPage() {
           { icon: IndianRupee, label: "Cost Reduction (₹)", value: stats.costSavings?.toLocaleString("en-IN") },
         ].map((c) => (
           <div key={c.label} className="stat-card">
-            <c.icon className="text-india-green" size={24} />
+            <c.icon className="text-moss" size={24} />
             <p className="stat-value">{c.value}</p>
             <p className="stat-label">{c.label}</p>
           </div>
         ))}
       </div>
-      <div className="card mb-6">
-        <h2 className="font-bold mb-4">Monthly Cost Savings (₹)</h2>
+      <div className="card-hover mb-6">
+        <h2 className="font-bold mb-4 text-sage-900">Monthly Cost Savings (₹)</h2>
         <SustainabilityBarChart labels={getMonthlyLabels()} data={stats.monthlySavings || []} label="Savings" />
       </div>
       <button

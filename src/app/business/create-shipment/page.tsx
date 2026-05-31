@@ -29,8 +29,9 @@ export default function CreateShipmentPage() {
   return (
     <div>
       {ToastComponent}
-      <h1 className="text-2xl font-bold mb-6">Create Shipment</h1>
-      <form onSubmit={submit} className="card max-w-2xl space-y-4">
+      <p className="section-label">New shipment</p>
+      <h1 className="page-heading mb-8">Create Shipment</h1>
+      <form onSubmit={submit} className="card-hover max-w-2xl space-y-4">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">Pickup Location</label>

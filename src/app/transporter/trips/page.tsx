@@ -38,11 +38,12 @@ export default function TripsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">My Trips</h1>
-      <div className="flex gap-2 mb-6">
+      <p className="section-label">Trips</p>
+      <h1 className="page-heading mb-8">My Trips</h1>
+      <div className="flex gap-2 mb-6 flex-wrap">
         {(["current", "upcoming", "completed"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${tab === t ? "bg-saffron-500 text-white" : "bg-white text-gray-600 border"}`}>
+            className={tab === t ? "tab-btn-active" : "tab-btn-inactive"}>
             {t === "current" ? "Current Trips" : t === "upcoming" ? "Upcoming" : "Completed"}
           </button>
         ))}
@@ -50,10 +51,10 @@ export default function TripsPage() {
 
       <div className="space-y-4">
         {filtered.map((t) => (
-          <div key={t.id} className="card flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div key={t.id} className="card-hover flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <p className="font-bold">{t.from_city} → {t.to_city}</p>
-              <p className="text-sm text-gray-500">{t.cargo_type} · {t.weight} tons · {t.business_name}</p>
+              <p className="text-sm text-sage-500">{t.cargo_type} · {t.weight} tons · {t.business_name}</p>
               <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">{statusLabel[t.status] || t.status}</span>
             </div>
             {t.status !== "delivered" && t.status !== "cancelled" && (
@@ -61,7 +62,7 @@ export default function TripsPage() {
             )}
           </div>
         ))}
-        {filtered.length === 0 && <p className="text-gray-500 text-center py-8">No trips in this category.</p>}
+        {filtered.length === 0 && <p className="text-sage-500 text-center py-8">No trips in this category.</p>}
       </div>
     </div>
   );

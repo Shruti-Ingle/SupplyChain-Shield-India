@@ -144,7 +144,7 @@ export function resolveCityCoords(fromCity: string, toCity: string) {
 }
 
 export function getScoreColor(score: number): string {
-  if (score >= 80) return "text-green-600 bg-green-100";
-  if (score >= 60) return "text-yellow-700 bg-yellow-100";
-  return "text-red-600 bg-red-100";
+  if (score >= 80) return "text-moss bg-sage-100";
+  if (score >= 60) return "text-earth bg-sage-50";
+  return "text-red-600 bg-red-50";
 }

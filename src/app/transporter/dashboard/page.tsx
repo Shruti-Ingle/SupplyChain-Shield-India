@@ -33,19 +33,20 @@ export default function TransporterDashboard() {
   }, []);
 
   const cards = [
-    { icon: Truck, label: "Active Trucks", value: stats.activeTrucks, color: "text-saffron-500" },
-    { icon: Route, label: "Active Trips", value: stats.activeTrips, color: "text-india-green" },
-    { icon: PackageSearch, label: "Available Matches", value: stats.availableMatches, color: "text-blue-500" },
-    { icon: IndianRupee, label: "Monthly Earnings", value: `₹${(stats.revenue || 0).toLocaleString("en-IN")}`, color: "text-purple-500" },
+    { icon: Truck, label: "Active Trucks", value: stats.activeTrucks },
+    { icon: Route, label: "Active Trips", value: stats.activeTrips },
+    { icon: PackageSearch, label: "Available Matches", value: stats.availableMatches },
+    { icon: IndianRupee, label: "Monthly Earnings", value: `₹${(stats.revenue || 0).toLocaleString("en-IN")}` },
   ];
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Transporter Dashboard</h1>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <p className="section-label">Overview</p>
+      <h1 className="page-heading mb-8">Transporter Dashboard</h1>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {cards.map((c) => (
           <div key={c.label} className="stat-card">
-            <c.icon className={c.color} size={24} />
+            <c.icon className="text-moss" size={24} />
             <p className="stat-value">{c.value}</p>
             <p className="stat-label">{c.label}</p>
           </div>
@@ -53,7 +54,7 @@ export default function TransporterDashboard() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 card p-2">
           <TrackingMap
             fromLat={19.076} fromLng={72.8777}
             toLat={23.0225} toLng={72.5714}
@@ -65,20 +66,20 @@ export default function TransporterDashboard() {
             height="300px"
           />
         </div>
-        <div className="card">
-          <h2 className="font-bold mb-4">Recent Match Requests</h2>
+        <div className="card-hover">
+          <h2 className="font-bold mb-4 text-sage-900">Recent Match Requests</h2>
           {matches.length === 0 ? (
-            <p className="text-gray-500 text-sm">No matches yet. Post a route to get started.</p>
+            <p className="text-sage-500 text-sm">No matches yet. Post a route to get started.</p>
           ) : (
             <div className="space-y-3">
               {matches.map((m) => (
-                <div key={m.id} className="border border-gray-100 rounded-lg p-3">
+                <div key={m.id} className="border border-sage-100 rounded-xl p-3 hover:border-sage-200 hover:bg-sage-50/50 transition-all duration-200">
                   <div className="flex justify-between items-start mb-1">
-                    <p className="font-medium text-sm">{m.from_city} → {m.to_city}</p>
+                    <p className="font-medium text-sm text-sage-800">{m.from_city} → {m.to_city}</p>
                     <MatchScoreBadge score={m.match_score} size="sm" />
                   </div>
-                  <p className="text-xs text-gray-500">{m.weight} tons · ₹{m.estimated_revenue.toLocaleString("en-IN")}</p>
-                  <Link href="/transporter/matches" className="text-xs text-saffron-600 font-medium mt-2 inline-block">
+                  <p className="text-xs text-sage-500">{m.weight} tons · ₹{m.estimated_revenue.toLocaleString("en-IN")}</p>
+                  <Link href="/transporter/matches" className="text-xs text-moss font-medium mt-2 inline-block hover:underline">
                     View Details →
                   </Link>
                 </div>

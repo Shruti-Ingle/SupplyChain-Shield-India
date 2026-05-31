@@ -14,7 +14,6 @@ import {
   Menu,
   X,
   LogOut,
-  Shield,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -53,7 +52,7 @@ const businessNav: NavItem[] = [
 
 const adminNav: NavItem[] = [
   { href: "/admin/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
-  { href: "/admin/verification", label: "User Verification", icon: <Shield size={20} /> },
+  { href: "/admin/verification", label: "User Verification", icon: <User size={20} /> },
   { href: "/admin/shipments", label: "Shipment Monitoring", icon: <MapPin size={20} /> },
   { href: "/admin/sustainability", label: "Sustainability Analytics", icon: <Leaf size={20} /> },
 ];
@@ -79,32 +78,32 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-cream">
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          className="fixed inset-0 bg-sage-900/30 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform lg:translate-x-0 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-sage-100 transform transition-transform duration-300 lg:translate-x-0 flex flex-col ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-4 border-b border-gray-100">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-saffron-500 to-india-green flex items-center justify-center">
-              <Shield className="text-white" size={18} />
+        <div className="p-5 border-b border-sage-100">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-xl bg-moss flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+              <Leaf className="text-sage-100" size={18} />
             </div>
             <div>
-              <p className="font-bold text-sm leading-tight">SupplyChain</p>
-              <p className="text-xs text-india-green font-semibold">Shield India</p>
+              <p className="font-bold text-sm leading-tight text-sage-900">SupplyChain</p>
+              <p className="text-xs text-sage-500 font-medium">Shield India</p>
             </div>
           </Link>
         </div>
 
-        <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
+        <nav className="p-3 space-y-0.5 flex-1 overflow-y-auto">
           {nav.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -112,25 +111,23 @@ export default function DashboardLayout({
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-saffron-50 text-saffron-700 border border-saffron-200"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                className={`sidebar-link ${
+                  active ? "sidebar-link-active" : "sidebar-link-inactive"
                 }`}
               >
-                {item.icon}
+                <span className={active ? "text-moss" : "text-sage-400"}>{item.icon}</span>
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-100">
-          <p className="text-xs text-gray-400 mb-1">Signed in as</p>
-          <p className="text-sm font-semibold truncate">{companyName}</p>
+        <div className="p-4 border-t border-sage-100 bg-sage-50/50">
+          <p className="text-xs text-sage-400 mb-0.5">Signed in as</p>
+          <p className="text-sm font-semibold truncate text-sage-800">{companyName}</p>
           <button
             onClick={handleLogout}
-            className="mt-3 flex items-center gap-2 text-sm text-red-600 hover:text-red-700"
+            className="mt-3 flex items-center gap-2 text-sm text-sage-500 hover:text-red-600 transition-colors duration-200"
           >
             <LogOut size={16} />
             Logout
@@ -139,16 +136,16 @@ export default function DashboardLayout({
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-          <button onClick={() => setSidebarOpen(true)} className="p-1">
-            <Menu size={24} />
+        <header className="lg:hidden glass-nav px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-xl hover:bg-sage-100 transition-colors">
+            <Menu size={22} className="text-sage-700" />
           </button>
-          <p className="font-semibold text-sm">SupplyChain Shield India</p>
-          <button onClick={() => setSidebarOpen(false)} className="p-1 opacity-0">
-            <X size={24} />
+          <p className="font-semibold text-sm text-sage-800">SupplyChain Shield</p>
+          <button onClick={() => setSidebarOpen(false)} className="p-2 opacity-0">
+            <X size={22} />
           </button>
         </header>
-        <main className="flex-1 p-4 md:p-6 overflow-auto">{children}</main>
+        <main className="flex-1 p-4 md:p-8 overflow-auto">{children}</main>
       </div>
     </div>
   );

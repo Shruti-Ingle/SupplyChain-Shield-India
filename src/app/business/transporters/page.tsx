@@ -44,27 +44,28 @@ export default function TransportersPage() {
   return (
     <div>
       {ToastComponent}
-      <h1 className="text-2xl font-bold mb-2">Available Transporters</h1>
-      <p className="text-gray-500 mb-6">Return-route trucks matching your shipments</p>
+      <p className="section-label">Matching</p>
+      <h1 className="page-heading mb-2">Available Transporters</h1>
+      <p className="text-sage-500 mb-6">Return-route trucks matching your shipments</p>
 
       {matches.length === 0 ? (
         <div className="card text-center py-12">
-          <p className="text-gray-500">No matching transporters yet. Create a shipment first.</p>
+          <p className="text-sage-500">No matching transporters yet. Create a shipment first.</p>
         </div>
       ) : (
         <div className="grid gap-4">
           {matches.map((m) => (
-            <div key={m.id} className="card flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div key={m.id} className="card-hover flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-3 mb-1">
                   <h3 className="font-bold">{m.from_city} → {m.to_city}</h3>
                   <MatchScoreBadge score={m.match_score} size="sm" />
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-sage-500">
                   {m.transporter_name} · {m.vehicle_number} ({m.vehicle_type}) · {m.capacity_available} tons
                 </p>
-                <p className="text-sm text-gray-500">Departure: {new Date(m.departure_time).toLocaleString()}</p>
-                <p className="text-sm font-medium text-india-green mt-1">Est. Cost: ₹{m.estimated_cost.toLocaleString("en-IN")}</p>
+                <p className="text-sm text-sage-500">Departure: {new Date(m.departure_time).toLocaleString()}</p>
+                <p className="text-sm font-medium text-moss mt-1">Est. Cost: ₹{m.estimated_cost.toLocaleString("en-IN")}</p>
               </div>
               <button onClick={() => book(m.id)} className="btn-secondary shrink-0">Book</button>
             </div>

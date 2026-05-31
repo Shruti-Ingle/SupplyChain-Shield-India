@@ -39,7 +39,7 @@ export function SustainabilityLineChart({
   labels,
   data,
   label,
-  color = "#FF9933",
+  color = "#4a7c59",
 }: LineChartProps) {
   return (
     <Line
@@ -69,7 +69,7 @@ export function SustainabilityBarChart({
   labels,
   data,
   label,
-  color = "#138808",
+  color = "#2d5a3d",
 }: LineChartProps) {
   return (
     <Bar
@@ -99,7 +99,7 @@ export function GreenScoreGauge({ score, size = 160 }: GaugeProps) {
           datasets: [
             {
               data: [score, 100 - score],
-              backgroundColor: ["#138808", "#e5e7eb"],
+              backgroundColor: ["#2d5a3d", "#e8ebe3"],
               borderWidth: 0,
             },
           ],
@@ -113,8 +113,8 @@ export function GreenScoreGauge({ score, size = 160 }: GaugeProps) {
         height={size}
       />
       <div className="absolute text-center">
-        <p className="text-3xl font-bold text-india-green">{score}</p>
-        <p className="text-xs text-gray-500">Green Score</p>
+        <p className="text-3xl font-bold text-moss">{score}</p>
+        <p className="text-xs text-sage-500">Green Score</p>
       </div>
     </div>
   );

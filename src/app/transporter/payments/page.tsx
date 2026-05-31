@@ -15,10 +15,11 @@ export default function TransporterPaymentsPage() {
   return (
     <div>
       {ToastComponent}
-      <h1 className="text-2xl font-bold mb-6">Payments</h1>
-      <div className="card mb-6 max-w-sm">
-        <p className="text-sm text-gray-500">Wallet Balance</p>
-        <p className="text-3xl font-bold text-india-green">₹29,600</p>
+      <p className="section-label">Billing</p>
+      <h1 className="page-heading mb-8">Payments</h1>
+      <div className="card-hover mb-6 max-w-sm">
+        <p className="text-sm text-sage-500">Wallet Balance</p>
+        <p className="text-3xl font-bold text-moss">₹29,600</p>
         <div className="flex gap-3 mt-4">
           <button onClick={() => showToast("Demo mode – payment not integrated")} className="btn-primary text-sm">Add Money</button>
           <button onClick={() => showToast("Demo mode – payment not integrated")} className="btn-outline text-sm">Withdraw</button>
@@ -28,7 +29,7 @@ export default function TransporterPaymentsPage() {
         <h2 className="font-bold mb-4">Recent Transactions</h2>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b text-left text-gray-500">
+            <tr className="border-b text-left text-sage-500">
               <th className="pb-3">Date</th>
               <th className="pb-3">Description</th>
               <th className="pb-3 text-right">Amount</th>

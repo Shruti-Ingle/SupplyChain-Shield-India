@@ -27,11 +27,12 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <p className="section-label">Overview</p>
+      <h1 className="page-heading mb-8">Admin Dashboard</h1>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {cards.map((c) => (
           <div key={c.label} className="stat-card">
-            <c.icon className="text-saffron-500" size={24} />
+            <c.icon className="text-moss" size={24} />
             <p className="stat-value">{c.value}</p>
             <p className="stat-label">{c.label}</p>
           </div>
@@ -39,6 +40,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
+        <div className="card p-2">
         <TrackingMap
           fromLat={28.7041} fromLng={77.1025}
           toLat={22.5726} toLng={88.3639}
@@ -50,17 +52,18 @@ export default function AdminDashboard() {
           ]}
           height="300px"
         />
-        <div className="card">
-          <h2 className="font-bold mb-4">Recent Activity</h2>
+        </div>
+        <div className="card-hover">
+          <h2 className="font-bold mb-4 text-sage-900">Recent Activity</h2>
           <div className="space-y-3 max-h-72 overflow-y-auto">
             {(stats.activities || []).map((a, i) => (
-              <div key={i} className="text-sm border-b border-gray-50 pb-2">
-                <p className="font-medium">{a.details}</p>
-                <p className="text-xs text-gray-400">{a.company_name} · {new Date(a.created_at).toLocaleString()}</p>
+              <div key={i} className="text-sm border-b border-sage-50 pb-2 last:border-0">
+                <p className="font-medium text-sage-800">{a.details}</p>
+                <p className="text-xs text-sage-400">{a.company_name} · {new Date(a.created_at).toLocaleString()}</p>
               </div>
             ))}
             {(!stats.activities || stats.activities.length === 0) && (
-              <p className="text-gray-500 text-sm">No recent activity.</p>
+              <p className="text-sage-500 text-sm">No recent activity.</p>
             )}
           </div>
         </div>

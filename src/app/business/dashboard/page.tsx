@@ -22,19 +22,20 @@ export default function BusinessDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Business Dashboard</h1>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <p className="section-label">Overview</p>
+      <h1 className="page-heading mb-8">Business Dashboard</h1>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {cards.map((c) => (
           <div key={c.label} className="stat-card">
-            <c.icon className="text-india-green" size={24} />
+            <c.icon className="text-moss" size={24} />
             <p className="stat-value">{c.value}</p>
             <p className="stat-label">{c.label}</p>
           </div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-3">
         <Link href="/business/create-shipment" className="btn-primary">Create Shipment</Link>
-        <Link href="/business/transporters" className="btn-secondary">Browse Transporters</Link>
+        <Link href="/business/transporters" className="btn-outline">Browse Transporters</Link>
       </div>
     </div>
   );

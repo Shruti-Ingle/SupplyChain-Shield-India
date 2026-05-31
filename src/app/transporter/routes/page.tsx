@@ -58,15 +58,18 @@ export default function RoutesPage() {
   return (
     <div>
       {ToastComponent}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Available Routes</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <p className="section-label">Routes</p>
+          <h1 className="page-heading">Available Routes</h1>
+        </div>
         <button onClick={() => setShowForm(!showForm)} className="btn-primary">
           {showForm ? "Cancel" : "Post Available Route"}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={publish} className="card mb-6 space-y-4">
+        <form onSubmit={publish} className="card-hover mb-6 space-y-4">
           <h2 className="font-bold">Post Empty Return Route</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -106,10 +109,10 @@ export default function RoutesPage() {
           <div key={r.id} className="card flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <p className="font-bold text-lg">{r.from_city} → {r.to_city}</p>
-              <p className="text-sm text-gray-500">{r.distance_km} km · {r.capacity_available} tons · {new Date(r.departure_time).toLocaleString()}</p>
+              <p className="text-sm text-sage-500">{r.distance_km} km · {r.capacity_available} tons · {new Date(r.departure_time).toLocaleString()}</p>
             </div>
             <div className="flex items-center gap-3">
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${r.status === "open" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${r.status === "open" ? "bg-green-100 text-green-700" : "bg-gray-100 text-sage-600"}`}>
                 {r.status}
               </span>
               {r.status === "open" && (
@@ -120,7 +123,7 @@ export default function RoutesPage() {
             </div>
           </div>
         ))}
-        {routes.length === 0 && <p className="text-gray-500 text-center py-8">No routes posted yet.</p>}
+        {routes.length === 0 && <p className="text-sage-500 text-center py-8">No routes posted yet.</p>}
       </div>
     </div>
   );

@@ -56,17 +56,20 @@ export default function FleetPage() {
   return (
     <div>
       {ToastComponent}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Fleet Management</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <p className="section-label">Fleet</p>
+          <h1 className="page-heading">Fleet Management</h1>
+        </div>
         <button onClick={openAdd} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add Truck
         </button>
       </div>
 
-      <div className="card overflow-x-auto">
+      <div className="card-hover overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b text-left text-gray-500">
+            <tr className="border-b text-left text-sage-500">
               <th className="pb-3 pr-4">Vehicle Number</th>
               <th className="pb-3 pr-4">Capacity</th>
               <th className="pb-3 pr-4">Type</th>
@@ -95,7 +98,7 @@ export default function FleetPage() {
             ))}
           </tbody>
         </table>
-        {trucks.length === 0 && <p className="text-center text-gray-500 py-8">No trucks yet. Add your first truck.</p>}
+        {trucks.length === 0 && <p className="text-center text-sage-500 py-8">No trucks yet. Add your first truck.</p>}
       </div>
 
       {modal && (
