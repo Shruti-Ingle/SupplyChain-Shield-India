@@ -11,7 +11,7 @@ npm run seed
 npm run dev
 ```
 
-Open http://localhost:3000
+Open https://supply-chain-shield-india.vercel.app/
 
 ## Demo Accounts
 
