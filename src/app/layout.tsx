@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -20,8 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-<html lang="en" className="dark">
-      <body className={`${dmSans.variable} font-sans`}>{children}</body>
+    <html lang="en">
+      <body className={`${dmSans.variable} font-sans`}>
+        <ThemeToggle />
+        {children}
+      </body>
     </html>
   );
 }

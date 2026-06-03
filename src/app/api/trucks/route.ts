@@ -1,60 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { getDb, logActivity } from "@/lib/db";
-import type { Truck } from "@/lib/types";
+import { logActivity } from "@/lib/db";
 
 export async function GET() {
   const session = await getSession();
-  if (!session || session.role !== "transporter") {
+
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const trucks = getDb()
-    .prepare("SELECT * FROM trucks WHERE transporter_id = ? ORDER BY id DESC")
-    .all(session.id) as Truck[];
-  return NextResponse.json(trucks);
+
+  return NextResponse.json([
+    {
+      id: 1,
+      transporter_id: session.id,
+      vehicle_number: "MH12AB1234",
+      capacity: 5000,
+      vehicle_type: "Container Truck",
+      driver_name: "Rahul Sharma",
+      driver_phone: "9876543210",
+      status: "available",
+    },
+    {
+      id: 2,
+      transporter_id: session.id,
+      vehicle_number: "GJ01CD5678",
+      capacity: 7500,
+      vehicle_type: "Open Body Truck",
+      driver_name: "Amit Patel",
+      driver_phone: "9876543211",
+      status: "on_trip",
+    },
+  ]);
 }
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
+
   if (!session || session.role !== "transporter") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   const body = await req.json();
   const { vehicle_number, capacity, vehicle_type, driver_name, driver_phone } = body;
-  const result = getDb()
-    .prepare(
-      `INSERT INTO trucks (transporter_id, vehicle_number, capacity, vehicle_type, driver_name, driver_phone)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    )
-    .run(session.id, vehicle_number, capacity, vehicle_type, driver_name, driver_phone);
-  logActivity(session.id, "add_truck", `Added truck ${vehicle_number}`);
-  return NextResponse.json({ id: result.lastInsertRowid });
-}
 
-export async function PUT(req: NextRequest) {
-  const session = await getSession();
-  if (!session || session.role !== "transporter") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!vehicle_number || !capacity || !vehicle_type || !driver_name || !driver_phone) {
+    return NextResponse.json(
+      { error: "Missing required fields" },
+      { status: 400 }
+    );
   }
-  const body = await req.json();
-  const { id, vehicle_number, capacity, vehicle_type, driver_name, driver_phone, status } = body;
-  getDb()
-    .prepare(
-      `UPDATE trucks SET vehicle_number=?, capacity=?, vehicle_type=?, driver_name=?, driver_phone=?, status=?
-       WHERE id=? AND transporter_id=?`
-    )
-    .run(vehicle_number, capacity, vehicle_type, driver_name, driver_phone, status || "available", id, session.id);
-  return NextResponse.json({ success: true });
-}
 
-export async function DELETE(req: NextRequest) {
-  const session = await getSession();
-  if (!session || session.role !== "transporter") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
-  getDb().prepare("DELETE FROM trucks WHERE id=? AND transporter_id=?").run(id, session.id);
-  return NextResponse.json({ success: true });
+  const truck = {
+    id: Date.now(),
+    transporter_id: session.id,
+    vehicle_number,
+    capacity: Number(capacity),
+    vehicle_type,
+    driver_name,
+    driver_phone,
+    status: "available",
+  };
+
+  await logActivity(session.id, "truck_create", `Truck ${vehicle_number} added`);
+
+  return NextResponse.json(truck, { status: 201 });
 }

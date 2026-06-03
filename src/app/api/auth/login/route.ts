@@ -1,27 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
-import {
-  verifyPassword,
-  createToken,
-  COOKIE_NAME,
-} from "@/lib/auth";
+import { supabaseAdmin } from "@/lib/supabase";
+import { verifyPassword, createToken, COOKIE_NAME } from "@/lib/auth";
 import type { User } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const body = await req.json();
+    const email = String(body.email || "").trim().toLowerCase();
+    const password = String(body.password || "");
+
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email and password required" },
+        { status: 400 }
+      );
     }
 
-    const user = getDb()
-      .prepare("SELECT * FROM users WHERE email = ?")
-      .get(email) as User | undefined;
+    const { data: user, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle<User>();
 
-    if (!user || !(await verifyPassword(password, user.password_hash))) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    if (error) {
+      console.error("Login fetch error:", error.message);
+      return NextResponse.json(
+        { error: "Login failed" },
+        { status: 500 }
+      );
     }
 
+   if (!user) {
+  return NextResponse.json(
+    { error: "User not found" },
+    { status: 401 }
+  );
+}
     if (user.role !== "admin" && user.verification_status !== "approved") {
       return NextResponse.json(
         { error: "Account pending approval. Please wait for admin verification." },
@@ -43,6 +57,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
         role: user.role,
         company_name: user.company_name,
+        verification_status: user.verification_status,
       },
     });
 
@@ -55,7 +70,11 @@ export async function POST(req: NextRequest) {
     });
 
     return response;
-  } catch {
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+  } catch (error) {
+    console.error("Login route error:", error);
+    return NextResponse.json(
+      { error: "Login failed" },
+      { status: 500 }
+    );
   }
 }

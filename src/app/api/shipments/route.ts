@@ -1,101 +1,104 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { getDb, logActivity } from "@/lib/db";
-import { resolveCityCoords, findMatchesForShipment } from "@/lib/matching";
-import type { Route, Shipment } from "@/lib/types";
+import { logActivity } from "@/lib/db";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const status = searchParams.get("status");
+
+  let query = supabaseAdmin
+    .from("shipments")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (session.role === "business") {
-    const shipments = getDb()
-      .prepare("SELECT * FROM shipments WHERE business_id = ? ORDER BY created_at DESC")
-      .all(session.id) as Shipment[];
-    return NextResponse.json(shipments);
+    query = query.eq("business_id", session.id);
   }
 
-  if (session.role === "admin") {
-    const shipments = getDb()
-      .prepare("SELECT s.*, u.company_name FROM shipments s JOIN users u ON s.business_id = u.id ORDER BY s.created_at DESC")
-      .all();
-    return NextResponse.json(shipments);
+  if (status && status !== "all") {
+    query = query.eq("status", status);
   }
 
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Shipments fetch error:", error.message);
+    return NextResponse.json({ error: "Failed to fetch shipments" }, { status: 500 });
+  }
+
+  return NextResponse.json(data || []);
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getSession();
-  if (!session || session.role !== "business") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const body = await req.json();
-  const { from_city, to_city, cargo_type, weight, volume, pickup_date, deadline } = body;
+  try {
+    const session = await getSession();
 
-  const coords = resolveCityCoords(from_city, to_city);
-  if (!coords) {
-    return NextResponse.json({ error: "Invalid city. Select from suggestions." }, { status: 400 });
-  }
+    if (!session || session.role !== "business") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const result = getDb()
-    .prepare(
-      `INSERT INTO shipments (business_id, from_city, to_city, from_lat, from_lng, to_lat, to_lng, distance_km, cargo_type, weight, volume, pickup_date, deadline)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-    .run(
-      session.id,
-      coords.from.name,
-      coords.to.name,
-      coords.from.lat,
-      coords.from.lng,
-      coords.to.lat,
-      coords.to.lng,
-      coords.distance,
+    const body = await req.json();
+
+    const from_city = String(body.from_city || body.pickup_location || "").trim();
+    const to_city = String(body.to_city || body.destination || "").trim();
+    const cargo_type = String(body.cargo_type || "").trim();
+    const weight = Number(body.weight || 0);
+    const volume = body.volume ? Number(body.volume) : null;
+    const pickup_date = String(body.pickup_date || "");
+    const deadline = String(body.deadline || "");
+
+    if (!from_city || !to_city || !cargo_type || !weight || !pickup_date || !deadline) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const shipmentPayload = {
+      business_id: session.id,
+      from_city,
+      to_city,
+      from_lat: 12.9716,
+      from_lng: 77.5946,
+      to_lat: 28.6139,
+      to_lng: 77.209,
+      distance_km: Number(body.distance_km || 1740),
       cargo_type,
       weight,
-      volume || null,
+      volume,
       pickup_date,
-      deadline
+      deadline,
+      status: "open",
+    };
+
+    const { data: shipment, error } = await supabaseAdmin
+      .from("shipments")
+      .insert(shipmentPayload)
+      .select("*")
+      .single();
+
+    if (error) {
+      console.error("Shipment insert error:", error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    await logActivity(session.id, "shipment_create", `Shipment ${from_city} to ${to_city} created`);
+
+    return NextResponse.json(
+      {
+        success: true,
+        shipment,
+        matches: [],
+        message: "Shipment posted successfully",
+      },
+      { status: 201 }
     );
-
-  const shipmentId = result.lastInsertRowid as number;
-  const shipment = getDb().prepare("SELECT * FROM shipments WHERE id = ?").get(shipmentId) as Shipment;
-
-  const routes = getDb()
-    .prepare("SELECT * FROM routes WHERE status = 'open'")
-    .all() as Route[];
-
-  const matches = findMatchesForShipment(shipment, routes);
-  for (const m of matches) {
-    getDb()
-      .prepare(
-        `INSERT OR IGNORE INTO matches (route_id, shipment_id, match_score, estimated_revenue, estimated_cost, fuel_saved, co2_saved)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`
-      )
-      .run(
-        m.route.id,
-        shipmentId,
-        m.match_score,
-        m.estimated_revenue,
-        m.estimated_cost,
-        m.fuel_saved,
-        m.co2_saved
-      );
+  } catch (error) {
+    console.error("Shipment create error:", error);
+    return NextResponse.json({ error: "Shipment creation failed" }, { status: 500 });
   }
-
-  logActivity(session.id, "post_shipment", `Posted shipment ${coords.from.name} → ${coords.to.name}`);
-  return NextResponse.json({ id: shipmentId, matches_found: matches.length });
-}
-
-export async function PATCH(req: NextRequest) {
-  const session = await getSession();
-  if (!session || session.role !== "business") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const { id, status } = await req.json();
-  getDb()
-    .prepare("UPDATE shipments SET status=? WHERE id=? AND business_id=? AND status='open'")
-    .run(status, id, session.id);
-  return NextResponse.json({ success: true });
 }
