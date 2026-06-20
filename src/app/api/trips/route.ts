@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { logActivity, updatePlatformStats } from "@/lib/db";
+import { logActivity, updatePlatformStats, calculateTripImpact } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -12,14 +12,14 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
 
-  const trips = [
+  return NextResponse.json([
     {
       id: 1,
       match_id: 1,
       route_id: 1,
       shipment_id: 1,
-      transporter_id: 1,
-      business_id: 1,
+      transporter_id: 101,
+      business_id: session.id,
       status: status || "in_transit",
       current_lat: 19.076,
       current_lng: 72.8777,
@@ -37,9 +37,7 @@ export async function GET(req: NextRequest) {
       vehicle_number: "MH12AB1234",
       company_name: "Green Logistics",
     },
-  ];
-
-  return NextResponse.json(trips);
+  ]);
 }
 
 export async function PATCH(req: NextRequest) {
@@ -59,8 +57,10 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
-  if (status === "delivered") {
-    await updatePlatformStats(18.5, 49.6);
+  const impact = calculateTripImpact(Number(body.distance_km || 148), Number(body.capacity || 1000));
+
+  if (["accepted", "booked", "delivered", "completed"].includes(status)) {
+    await updatePlatformStats(impact.fuelSaved, impact.co2Saved);
   }
 
   await logActivity(session.id, "trip_update", `Trip ${id} updated to ${status}`);
@@ -69,5 +69,8 @@ export async function PATCH(req: NextRequest) {
     success: true,
     id,
     status,
+    fuel_saved: impact.fuelSaved,
+    co2_saved: impact.co2Saved,
+    statsUpdated: true,
   });
 }

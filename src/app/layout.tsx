@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import ThemeToggle from "@/components/ThemeToggle";
+import BusinessJourneyButton from "@/components/BusinessJourneyButton";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${dmSans.variable} font-sans`}>
         <ThemeToggle />
+        <BusinessJourneyButton />
         {children}
       </body>
     </html>

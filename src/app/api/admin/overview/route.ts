@@ -5,15 +5,11 @@ import { readStore } from "@/lib/store";
 export async function GET() {
   const session = await getSession();
 
-  if (!session) {
+  if (!session || session.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const store = readStore();
 
-  return NextResponse.json({
-    ...store.stats,
-    green_score: 85,
-    role: session.role
-  });
+  return NextResponse.json(store);
 }

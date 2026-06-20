@@ -1,68 +1,33 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
-interface Trip {
-  id: number;
-  from_city: string;
-  to_city: string;
-  cargo_type: string;
-  weight: number;
-  business_name: string;
-  status: string;
-  created_at: string;
-}
-
-export default function TripsPage() {
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [tab, setTab] = useState<"current" | "completed" | "upcoming">("current");
+export default function TransporterTripsPage() {
+  const [shipments, setShipments] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("/api/trips").then((r) => r.json()).then(setTrips);
+    fetch("/api/shipments?mine=1")
+      .then((r) => r.json())
+      .then((d) => setShipments(Array.isArray(d) ? d : []));
   }, []);
-
-  const filtered = trips.filter((t) => {
-    if (tab === "completed") return t.status === "delivered";
-    if (tab === "upcoming") return t.status === "pending";
-    return !["delivered", "cancelled"].includes(t.status);
-  });
-
-  const statusLabel: Record<string, string> = {
-    pending: "Pending Pickup",
-    picked_up: "Picked Up",
-    in_transit: "In Transit",
-    delivered: "Delivered",
-    cancelled: "Cancelled",
-  };
 
   return (
     <div>
-      <p className="section-label">Trips</p>
-      <h1 className="page-heading mb-8">My Trips</h1>
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {(["current", "upcoming", "completed"] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)}
-            className={tab === t ? "tab-btn-active" : "tab-btn-inactive"}>
-            {t === "current" ? "Current Trips" : t === "upcoming" ? "Upcoming" : "Completed"}
-          </button>
-        ))}
-      </div>
+      <p className="section-label">Transporter</p>
+      <h1 className="page-heading mb-6">Accepted Shipments</h1>
 
-      <div className="space-y-4">
-        {filtered.map((t) => (
-          <div key={t.id} className="card-hover flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <p className="font-bold">{t.from_city} → {t.to_city}</p>
-              <p className="text-sm text-sage-500">{t.cargo_type} · {t.weight} tons · {t.business_name}</p>
-              <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">{statusLabel[t.status] || t.status}</span>
-            </div>
-            {t.status !== "delivered" && t.status !== "cancelled" && (
-              <Link href={`/tracking/${t.id}`} className="btn-primary text-sm">View Tracking</Link>
-            )}
+      <div className="grid gap-5">
+        {shipments.length === 0 && <div className="card">No accepted shipments yet.</div>}
+
+        {shipments.map((s) => (
+          <div key={s.id} className="card">
+            <h2 className="text-xl font-bold">{s.from_city} to {s.to_city}</h2>
+            <p className="text-sm">Business: {s.business_company}</p>
+            <p className="text-sm">Cargo: {s.cargo_type}</p>
+            <p className="text-sm">Weight: {s.weight} kg</p>
+            <p className="text-sm capitalize">Status: <b>{s.status}</b></p>
           </div>
         ))}
-        {filtered.length === 0 && <p className="text-sage-500 text-center py-8">No trips in this category.</p>}
       </div>
     </div>
   );

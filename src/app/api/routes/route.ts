@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { logActivity } from "@/lib/db";
-import { resolveCityCoords } from "@/lib/matching";
+import { readStore, writeStore } from "@/lib/store";
 
 export async function GET() {
   const session = await getSession();
@@ -10,76 +9,93 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json([
-    {
-      id: 1,
-      transporter_id: session.id,
-      truck_id: 1,
-      from_city: "Mumbai",
-      to_city: "Pune",
-      from_lat: 19.076,
-      from_lng: 72.8777,
-      to_lat: 18.5204,
-      to_lng: 73.8567,
-      distance_km: 148,
-      capacity_available: 3500,
-      departure_time: new Date(Date.now() + 86400000).toISOString(),
-      status: "open",
-      created_at: new Date().toISOString(),
-      vehicle_number: "MH12AB1234",
-      vehicle_type: "Container Truck",
-    },
-  ]);
+  const store = readStore();
+  return NextResponse.json(store.journeys || []);
 }
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
 
   if (!session || session.role !== "transporter") {
+    return NextResponse.json({ error: "Only transporter can create journey" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const store = readStore();
+
+  const journey = {
+    id: Date.now(),
+    transporter_id: session.id,
+    transporter_company: session.company_name || "Transporter",
+    from_city: body.from_city || body.start || "Mumbai",
+    to_city: body.to_city || body.end || "Pune",
+    capacity_available: Number(body.capacity_available || body.capacity || 1000),
+    costing: Number(body.costing || body.cost || body.price || 10000),
+    distance_km: Number(body.distance_km || 150),
+    departure_time: body.departure_time || new Date().toISOString(),
+    vehicle_number: body.vehicle_number || "MH12AB1234",
+    vehicle_type: body.vehicle_type || "Truck",
+    status: "open",
+    created_at: new Date().toISOString(),
+    fuel_saved: 18.5,
+    co2_saved: 49.6,
+  };
+
+  store.journeys.unshift(journey);
+  writeStore(store);
+
+  return NextResponse.json({
+    success: true,
+    journey,
+    route: journey,
+    message: "Journey created successfully",
+  }, { status: 201 });
+}
+
+export async function PATCH(req: NextRequest) {
+  const session = await getSession();
+
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = await req.json();
-  const {
-    truck_id,
-    from_city,
-    to_city,
-    distance_km,
-    capacity_available,
-    departure_time,
-  } = body;
+  const store = readStore();
 
-  if (!truck_id || !from_city || !to_city || !distance_km || !capacity_available || !departure_time) {
-    return NextResponse.json(
-      { error: "Missing required fields" },
-      { status: 400 }
-    );
+  const journey = store.journeys.find((j: any) => Number(j.id) === Number(body.id));
+
+  if (!journey) {
+    return NextResponse.json({ error: "Journey not found" }, { status: 404 });
   }
 
-  const fromCoords = resolveCityCoords(from_city);
-  const toCoords = resolveCityCoords(to_city);
+  journey.status = body.status || "booked";
+  journey.booked_by = session.id;
+  journey.booked_by_company = session.company_name || "Business";
 
-  const route = {
+  store.bookings.unshift({
     id: Date.now(),
-    transporter_id: session.id,
-    truck_id: Number(truck_id),
-    from_city,
-    to_city,
-    from_lat: fromCoords.lat,
-    from_lng: fromCoords.lng,
-    to_lat: toCoords.lat,
-    to_lng: toCoords.lng,
-    distance_km: Number(distance_km),
-    capacity_available: Number(capacity_available),
-    departure_time,
-    status: "open",
+    journey_id: journey.id,
+    business_id: session.id,
+    business_company: session.company_name || "Business",
+    transporter_id: journey.transporter_id,
+    transporter_company: journey.transporter_company,
+    from_city: journey.from_city,
+    to_city: journey.to_city,
+    costing: journey.costing,
+    status: journey.status,
     created_at: new Date().toISOString(),
-  };
+  });
 
-  await logActivity(session.id, "route_create", `Route ${from_city} to ${to_city} created`);
+  store.stats.trips_matched += 1;
+  store.stats.empty_trips_avoided += 1;
+  store.stats.fuel_saved += Number(journey.fuel_saved || 18.5);
+  store.stats.co2_reduced += Number(journey.co2_saved || 49.6);
+
+  writeStore(store);
 
   return NextResponse.json({
-    route,
-    matches: [],
-  }, { status: 201 });
+    success: true,
+    journey,
+    stats: store.stats,
+  });
 }

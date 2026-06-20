@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
+import { readStore } from "@/lib/store";
 
 export async function GET() {
+  const store = readStore();
+
   return NextResponse.json({
     id: 1,
-    trips_matched: 1247,
-    empty_trips_avoided: 892,
-    fuel_saved: 45600,
-    co2_reduced: 122208,
+    ...store.stats
   });
 }

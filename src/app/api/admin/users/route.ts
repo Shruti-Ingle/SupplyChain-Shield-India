@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { logActivity } from "@/lib/db";
+import { readStore, writeStore } from "@/lib/store";
 
 export async function GET() {
   const session = await getSession();
@@ -9,23 +9,14 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const store = readStore();
+  const users = store.users || [];
+
   return NextResponse.json({
-    transporters: [
-      {
-        id: 2,
-        email: "transporter@test.com",
-        company_name: "Green Logistics",
-        verification_status: "pending",
-      }
-    ],
-    businesses: [
-      {
-        id: 3,
-        email: "business@test.com",
-        company_name: "FreshFarm Traders",
-        verification_status: "approved",
-      }
-    ]
+    transporters: users.filter((u: any) => u.role === "transporter"),
+    businesses: users.filter((u: any) => u.role === "business"),
+    admins: users.filter((u: any) => u.role === "admin"),
+    users,
   });
 }
 
@@ -37,17 +28,17 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { user_id, status } = body;
+  const store = readStore();
 
-  await logActivity(
-    session.id,
-    "admin_user_update",
-    `User ${user_id} marked as ${status}`
-  );
+  const user = store.users.find((u: any) => Number(u.id) === Number(body.user_id));
 
-  return NextResponse.json({
-    success: true,
-    user_id,
-    status,
-  });
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  user.verification_status = body.status || body.verification_status || "approved";
+
+  writeStore(store);
+
+  return NextResponse.json({ success: true, user });
 }

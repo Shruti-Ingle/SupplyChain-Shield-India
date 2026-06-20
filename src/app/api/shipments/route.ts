@@ -1,104 +1,100 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { logActivity } from "@/lib/db";
-import { supabaseAdmin } from "@/lib/supabase";
+import { readStore, writeStore } from "@/lib/store";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+  const store = readStore();
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status");
+  const mine = searchParams.get("mine");
 
-  let query = supabaseAdmin
-    .from("shipments")
-    .select("*")
-    .order("created_at", { ascending: false });
+  let shipments = store.shipments || [];
 
   if (session.role === "business") {
-    query = query.eq("business_id", session.id);
+    shipments = shipments.filter((s: any) => Number(s.business_id) === Number(session.id));
   }
 
-  if (status && status !== "all") {
-    query = query.eq("status", status);
+  if (session.role === "transporter") {
+    if (mine === "1") {
+      shipments = shipments.filter((s: any) => Number(s.transporter_id) === Number(session.id));
+    } else {
+      shipments = shipments.filter((s: any) => s.status === "open");
+    }
   }
 
-  const { data, error } = await query;
-
-  if (error) {
-    console.error("Shipments fetch error:", error.message);
-    return NextResponse.json({ error: "Failed to fetch shipments" }, { status: 500 });
-  }
-
-  return NextResponse.json(data || []);
+  return NextResponse.json(shipments);
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const session = await getSession();
-
-    if (!session || session.role !== "business") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = await req.json();
-
-    const from_city = String(body.from_city || body.pickup_location || "").trim();
-    const to_city = String(body.to_city || body.destination || "").trim();
-    const cargo_type = String(body.cargo_type || "").trim();
-    const weight = Number(body.weight || 0);
-    const volume = body.volume ? Number(body.volume) : null;
-    const pickup_date = String(body.pickup_date || "");
-    const deadline = String(body.deadline || "");
-
-    if (!from_city || !to_city || !cargo_type || !weight || !pickup_date || !deadline) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
-
-    const shipmentPayload = {
-      business_id: session.id,
-      from_city,
-      to_city,
-      from_lat: 12.9716,
-      from_lng: 77.5946,
-      to_lat: 28.6139,
-      to_lng: 77.209,
-      distance_km: Number(body.distance_km || 1740),
-      cargo_type,
-      weight,
-      volume,
-      pickup_date,
-      deadline,
-      status: "open",
-    };
-
-    const { data: shipment, error } = await supabaseAdmin
-      .from("shipments")
-      .insert(shipmentPayload)
-      .select("*")
-      .single();
-
-    if (error) {
-      console.error("Shipment insert error:", error.message);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    await logActivity(session.id, "shipment_create", `Shipment ${from_city} to ${to_city} created`);
-
-    return NextResponse.json(
-      {
-        success: true,
-        shipment,
-        matches: [],
-        message: "Shipment posted successfully",
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Shipment create error:", error);
-    return NextResponse.json({ error: "Shipment creation failed" }, { status: 500 });
+  const session = await getSession();
+  if (!session || session.role !== "business") {
+    return NextResponse.json({ error: "Only business can create shipment" }, { status: 401 });
   }
+
+  const body = await req.json();
+  const store = readStore();
+
+  const shipment = {
+    id: Date.now(),
+    business_id: session.id,
+    business_company: session.company_name || "Business",
+    from_city: body.from_city || body.pickup_location || "Mumbai",
+    to_city: body.to_city || body.destination || "Pune",
+    cargo_type: body.cargo_type || "General Cargo",
+    weight: Number(body.weight || 1),
+    volume: body.volume ? Number(body.volume) : null,
+    pickup_date: body.pickup_date || new Date().toISOString().slice(0, 10),
+    deadline: body.deadline || new Date(Date.now() + 86400000).toISOString().slice(0, 10),
+    status: "open",
+    created_at: new Date().toISOString(),
+  };
+
+  store.shipments.unshift(shipment);
+  writeStore(store);
+
+  return NextResponse.json({ success: true, shipment }, { status: 201 });
+}
+
+export async function PATCH(req: NextRequest) {
+  const session = await getSession();
+  if (!session || session.role !== "transporter") {
+    return NextResponse.json({ error: "Only transporter can accept shipment" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const store = readStore();
+
+  const shipment = store.shipments.find((s: any) => Number(s.id) === Number(body.id));
+  if (!shipment) return NextResponse.json({ error: "Shipment not found" }, { status: 404 });
+
+  shipment.status = "accepted";
+  shipment.transporter_id = session.id;
+  shipment.transporter_company = session.company_name || "Transporter";
+  shipment.accepted_at = new Date().toISOString();
+
+  store.bookings.unshift({
+    id: Date.now(),
+    shipment_id: shipment.id,
+    business_id: shipment.business_id,
+    business_company: shipment.business_company,
+    transporter_id: session.id,
+    transporter_company: shipment.transporter_company,
+    from_city: shipment.from_city,
+    to_city: shipment.to_city,
+    cargo_type: shipment.cargo_type,
+    weight: shipment.weight,
+    status: "accepted",
+    created_at: new Date().toISOString(),
+  });
+
+  store.stats.trips_matched += 1;
+  store.stats.empty_trips_avoided += 1;
+  store.stats.fuel_saved += 18.5;
+  store.stats.co2_reduced += 49.6;
+
+  writeStore(store);
+
+  return NextResponse.json({ success: true, shipment, stats: store.stats });
 }
